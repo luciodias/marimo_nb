@@ -3,10 +3,6 @@ import marimo
 __generated_with = "0.23.16"
 app = marimo.App(width="full")
 
-with app.setup:
-    #setup cell
-    pass
-
 
 @app.cell
 def _():
@@ -81,7 +77,7 @@ def _(math, mo, svg, t1, t2, total_internal):
     ]
     if not total_internal:
         _elements.append(
-            _ray(0.0, 0.0, -_L * math.sin(t2), -_L * math.cos(t2), "#10b981")
+            _ray(0.0, 0.0, _L * math.sin(t2), -_L * math.cos(t2), "#10b981")
         )
 
     for _label, _dy in [("n\u2081", 0.9), ("n\u2082", -0.9)]:
