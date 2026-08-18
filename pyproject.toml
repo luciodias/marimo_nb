@@ -8,7 +8,8 @@ authors = [
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
-    "marimo[recommended] (>=0.23.16,<0.24.0)"
+    "marimo[recommended] (>=0.23.16,<0.24.0)",
+    "svg-py (>=1.10.0,<2.0.0)"
 ]
 
 

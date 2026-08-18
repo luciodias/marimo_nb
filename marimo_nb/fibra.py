@@ -11,16 +11,10 @@ with app.setup:
 @app.cell
 def _():
     import marimo as mo
-
-    return (mo,)
-
-
-@app.cell
-def _():
-    import altair as alt
     import math
+    import svg
 
-    return alt, math
+    return math, mo, svg
 
 
 @app.cell
@@ -53,76 +47,79 @@ def _(math, n1, n2, theta1):
 
 
 @app.cell
-def _(alt, math, t1, t2, total_internal):
-    L = 1.0
-    incident = [
-        {"x": -L * math.sin(t1), "y": L * math.cos(t1), "ray": "Incidente"},
-        {"x": 0.0, "y": 0.0, "ray": "Incidente"},
+def _(math, mo, svg, t1, t2, total_internal):
+    _L = 1.0
+    _W, _H = 640.0, 540.0
+    _XMIN, _XMAX = -1.6, 1.6
+    _YMIN, _YMAX = -1.35, 1.35
+
+
+    def _px(x, y):
+        return (
+            (x - _XMIN) / (_XMAX - _XMIN) * _W,
+            (_YMAX - y) / (_YMAX - _YMIN) * _H,
+        )
+
+
+    def _ray(x1, y1, x2, y2, color):
+        p1 = _px(x1, y1)
+        p2 = _px(x2, y2)
+        return svg.Line(
+            x1=p1[0], y1=p1[1], x2=p2[0], y2=p2[1],
+            stroke=color, stroke_width=3.5, stroke_linecap="round",
+        )
+
+
+    _px0 = _px(0.0, 0.0)[0]
+    _py0 = _px(0.0, 0.0)[1]
+
+    _elements = [
+        svg.Line(x1=0.0, y1=_py0, x2=_W, y2=_py0, stroke="#94a3b8", stroke_width=2.5),
+        svg.Line(x1=_px0, y1=0.0, x2=_px0, y2=_H, stroke="#94a3b8", stroke_width=1.5, stroke_dasharray=[5, 4]),
+        _ray(0.0, 0.0, -_L * math.sin(t1), _L * math.cos(t1), "#f59e0b"),
+        _ray(0.0, 0.0, _L * math.sin(t1), _L * math.cos(t1), "#3b82f6"),
     ]
-    reflected = [
-        {"x": 0.0, "y": 0.0, "ray": "Refletida"},
-        {"x": L * math.sin(t1), "y": L * math.cos(t1), "ray": "Refletida"},
-    ]
-    segments = incident + reflected
     if not total_internal:
-        segments += [
-            {"x": 0.0, "y": 0.0, "ray": "Refratada"},
-            {
-                "x": -L * math.sin(t2),
-                "y": -L * math.cos(t2),
-                "ray": "Refratada",
-            },
-        ]
-
-    rays = (
-        alt.Chart(segments)
-        .mark_line(strokeWidth=3.5, strokeCap="round")
-        .encode(
-            x=alt.X(
-                "x:Q",
-                scale=alt.Scale(domain=[-1.6, 1.6]),
-                axis=alt.Axis(title=None),
-            ),
-            y=alt.Y(
-                "y:Q",
-                scale=alt.Scale(domain=[-1.3, 1.3]),
-                axis=alt.Axis(title=None),
-            ),
-            color=alt.Color(
-                "ray:N",
-                legend=alt.Legend(title="Raio", orient="top"),
-                scale=alt.Scale(
-                    domain=["Incidente", "Refletida", "Refratada"],
-                    range=["#f59e0b", "#3b82f6", "#10b981"],
-                ),
-            ),
+        _elements.append(
+            _ray(0.0, 0.0, -_L * math.sin(t2), -_L * math.cos(t2), "#10b981")
         )
-        .properties(width=640, height=520, title="Lei de Snell — Descartes")
-    )
 
-    interface = (
-        alt.Chart([{"y": 0.0}])
-        .mark_rule(stroke="#94a3b8", strokeWidth=2.5)
-        .encode(y="y:Q")
-    )
-    normal = (
-        alt.Chart([{"x": 0.0}])
-        .mark_rule(stroke="#94a3b8", strokeWidth=1.5, strokeDash=[5, 4])
-        .encode(x="x:Q")
-    )
-    labels = (
-        alt.Chart(
-            [
-                {"x": 0.75, "y": 0.9, "text": "n₁"},
-                {"x": 0.75, "y": -0.9, "text": "n₂"},
-            ]
+    for _label, _dy in [("n\u2081", 0.9), ("n\u2082", -0.9)]:
+        _p = _px(0.75, _dy)
+        _elements.append(
+            svg.Text(x=_p[0], y=_p[1], text=_label, font_size=24, font_style="italic", fill="#475569")
         )
-        .mark_text(fontSize=24, fontStyle="italic", color="#475569")
-        .encode(x="x:Q", y="y:Q", text="text:N")
+
+    _tp = _px(0.0, 1.24)
+    _elements.append(
+        svg.Text(x=_tp[0], y=_tp[1], text="Lei de Snell \u2014 Descartes", font_size=17,
+                 font_weight="bold", text_anchor="middle", fill="#1e293b")
     )
 
-    chart = alt.layer(interface, normal, rays, labels)
-    return
+    _legend_y = 46
+    _legend = [
+        (180, "#f59e0b", "Incidente"),
+        (280, "#3b82f6", "Refletida"),
+        (382, "#10b981", "Refratada"),
+    ]
+    for _lx, _lcolor, _llabel in _legend:
+        _elements.append(
+            svg.Line(x1=_lx, y1=_legend_y, x2=_lx + 26, y2=_legend_y,
+                     stroke=_lcolor, stroke_width=3.5, stroke_linecap="round")
+        )
+        _elements.append(
+            svg.Text(x=_lx + 32, y=_legend_y + 4, text=_llabel, font_size=13, fill="#334155")
+        )
+
+    chart = mo.Html(
+        svg.SVG(
+            width=640,
+            height=540,
+            viewBox=svg.ViewBoxSpec(0, 0, 640, 540),
+            elements=_elements,
+        ).as_str()
+    )
+    return (chart,)
 
 
 @app.cell
@@ -142,6 +139,30 @@ def _(theta2_deg, theta_c_deg, total_internal):
         f" &nbsp;|&nbsp; **Status:** "
         f"<span style='color:{status_color}'>{status}</span>"
     )
+    return
+
+
+@app.cell
+def _(n1):
+    n1
+    return
+
+
+@app.cell
+def _(n2):
+    n2
+    return
+
+
+@app.cell
+def _(theta1):
+    theta1
+    return
+
+
+@app.cell
+def _(chart):
+    chart
     return
 
 

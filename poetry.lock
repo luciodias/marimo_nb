@@ -2506,6 +2506,21 @@ anyio = ">=3.6.2,<5"
 full = ["httpx (>=0.27.0,<0.29.0)", "httpx2 (>=2.0.0)", "itsdangerous", "jinja2", "python-multipart (>=0.0.18)", "pyyaml"]
 
 [[package]]
+name = "svg-py"
+version = "1.10.0"
+description = "SVG drawing library"
+optional = false
+python-versions = ">=3.7"
+groups = ["main"]
+files = [
+    {file = "svg_py-1.10.0-py3-none-any.whl", hash = "sha256:54c7470347d5d79b30d059584a4f449da08b462903e8ce262981338bab755560"},
+    {file = "svg_py-1.10.0.tar.gz", hash = "sha256:2e1391411a205220a0e72ca303f3c2d11dbd564cb1dbc445406c5e11421bcc4b"},
+]
+
+[package.extras]
+dev = ["isort", "mypy", "pytest"]
+
+[[package]]
 name = "tiktoken"
 version = "0.13.0"
 description = "tiktoken is a fast BPE tokeniser for use with OpenAI's models"
@@ -2857,4 +2872,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.14"
-content-hash = "2609629de95c0f64c342ac9ea801872354868043f41657ed36b226b746d667ad"
+content-hash = "6a4126c38d523426c1aecefcf2d0ef8b6adddd7fa4d716a0742ed6ec559b947e"
