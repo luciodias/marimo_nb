@@ -1,7 +1,7 @@
 import marimo
 
 __generated_with = "0.23.16"
-app = marimo.App(width="full")
+app = marimo.App(width="full", layout_file="layouts/fibra.slides.json")
 
 
 @app.cell
@@ -139,26 +139,13 @@ def _(theta2_deg, theta_c_deg, total_internal):
 
 
 @app.cell
-def _(n1):
-    n1
-    return
-
-
-@app.cell
-def _(n2):
-    n2
-    return
-
-
-@app.cell
-def _(theta1):
-    theta1
-    return
-
-
-@app.cell
-def _(chart):
-    chart
+def _(chart, mo, n1, n2, theta1):
+    mo.md(f"""
+    {n1}
+    {n2}
+    {theta1}
+    {chart}
+    """)
     return
 
 
