@@ -46,7 +46,7 @@ def _(PCA, StandardScaler, np, pd):
 @app.cell
 def _(plt, scores):
 
-    plt.figure(figsize=(8, 6))
+    plt.figure(figsize=(6, 6))
     plt.scatter(scores[:, 0], scores[:, 1], alpha=0.6)
     plt.xlabel('Principal Component 1')
     plt.ylabel('Principal Component 2')
@@ -58,7 +58,7 @@ def _(plt, scores):
 
 @app.cell
 def _(loadings_df, pca, plt):
-    plt.figure(figsize=(7, 7))
+    plt.figure(figsize=(6, 6))
 
     # Desenha as linhas dos eixos centrais
     plt.axhline(0, color='gray', linestyle='--', linewidth=1)
@@ -69,7 +69,7 @@ def _(loadings_df, pca, plt):
         # Vetores vermelhos partindo da origem (0,0)
         plt.arrow(0, 0, loadings_df.loc[feature, 'PC1'], loadings_df.loc[feature, 'PC2'], 
                   color='crimson', head_width=0.04, head_length=0.04, linewidth=2, length_includes_head=True)
-    
+
         # Texto identificando a variável original
         plt.text(loadings_df.loc[feature, 'PC1'] * 1.1, loadings_df.loc[feature, 'PC2'] * 1.1, 
                   feature, color='black', ha='center', va='center', fontsize=11, fontweight='bold')

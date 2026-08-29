@@ -806,7 +806,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "marimo", extras = ["recommended"], specifier = ">=0.23.16,<0.24.1" },
+    { name = "marimo", extras = ["recommended"], specifier = ">=0.23.16" },
     { name = "matplotlib", specifier = ">=3.11.1,<4.0.0" },
     { name = "pandas", specifier = ">=3.0.5,<4.0.0" },
     { name = "scikit-learn", specifier = ">=1.9.0" },
