@@ -13,7 +13,7 @@ def _():
     from sklearn.decomposition import PCA
     from sklearn.preprocessing import StandardScaler, Normalizer
 
-    return PCA, StandardScaler, mo, np, pd, plt
+    return PCA, StandardScaler, mo, pd, plt
 
 
 @app.cell
@@ -51,7 +51,7 @@ def _(df, mo):
 
 @app.cell
 def _(media_df, mo):
-    mo.ui.matplotlib(media_df['std'].plot(figsize=(16,6),color='r'))
+    mo.ui.matplotlib(media_df['std'].plot(figsize=(16,6),color='r',title='Desvio Padrão'))
     return
 
 
@@ -65,51 +65,32 @@ def _(df, mo, plt):
 
 
 @app.cell
-def _(PCA, StandardScaler, df, mo, np, pd):
+def _(PCA, StandardScaler, df, mo, pd):
     samples,n_vars = df.shape
 
     X = df.to_numpy()
     X_scaled = StandardScaler().fit_transform(X)
     pca = PCA() #n_components=n_vars,)
     scores = pca.fit_transform(X_scaled)
-    scores_df = pd.DataFrame(data=scores,columns=df.columns)
-    loadings = pca.components_.T * np.sqrt(pca.explained_variance_)
-    loadings_df = pd.DataFrame(data=loadings, columns=[f'PC{(x+1)}' for x in range(n_vars)])
+    scores_df = pd.DataFrame(data=scores,) #columns=df.columns)
+    loadings = pca.components_.T # * np.sqrt(pca.explained_variance_)
+    loadings_df = pd.DataFrame(data=loadings,) #columns=[f'PC{(x+1)}' for x in range(n_vars)])
     mo.vstack([
-        scores_df,
-        loadings_df, 
+        mo.ui.matplotlib(scores_df[[0,1,2]].plot(figsize=(16, 4),title='Scores')),
+        mo.ui.matplotlib(loadings_df[[0,1,2]].plot(figsize=(16, 4),title='Loadings')),
     ]) 
-
-    return loadings_df, scores_df
+    return (loadings_df,)
 
 
 @app.cell
 def _(loadings_df, mo, plt):
     _fig = plt.figure(figsize=(8, 6))
     _ax = _fig.add_subplot(111, projection='3d')
-    scatter = _ax.scatter3D(loadings_df['PC1'], loadings_df['PC2'], loadings_df['PC3'],)
+    scatter = _ax.scatter3D(loadings_df[0], loadings_df[1], loadings_df[2],)
     _ax.set_xlabel('PC1')
     _ax.set_ylabel('PC2')
     _ax.set_zlabel('PC3')
     mo.ui.matplotlib(_fig.gca())
-    return
-
-
-@app.cell
-def _(mo, plt, scores_df):
-    _fig = plt.figure(figsize=(8, 6))
-    _ax = _fig.add_subplot(111, projection='3d')
-    _scatter = _ax.scatter3D(scores_df['azeite_oliva1'], scores_df['oleo_canola1'], scores_df['oleo_girassol1'],)
-    _ax.set_xlabel('X')
-    _ax.set_ylabel('Y')
-    _ax.set_zlabel('Z')
-    mo.ui.matplotlib(_fig.gca())
-    return
-
-
-@app.cell
-def _(scores_df):
-    scores_df.columns
     return
 
 
