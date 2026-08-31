@@ -9,8 +9,9 @@ def _():
     import marimo as mo
     import pandas as pd
     import altair as alt
+    import matplotlib.pyplot as plt
 
-    return mo, pd
+    return mo, pd, plt
 
 
 @app.cell
@@ -31,6 +32,33 @@ def _(df, mo):
                              grid=True,
                              xlabel=r'$cm^-1$',
                             ))
+    return
+
+
+@app.cell
+def _(df, mo):
+    def norm(df,col='std'):
+        df[col] = df[col] - df[col].mean()
+
+    media_df = df.agg(['min', 'max', 'mean', 'std'], axis=1)
+    norm(media_df)
+    #media_df['std'] = media_df['std'] * (media_df.max().max()/media_df['std'].max())
+    mo.ui.matplotlib(media_df.drop(columns=['std']).plot(figsize=(16,6)))
+    return (media_df,)
+
+
+@app.cell
+def _(media_df, mo):
+    mo.ui.matplotlib(media_df['std'].plot(figsize=(16,6),color='r'))
+    return
+
+
+@app.cell
+def _(df, mo, plt):
+    range = (1620,1685)
+    fig = df[(df.index > min(range)) & (df.index < max(range))].T.boxplot(figsize=(16,7),grid=False)
+    fig.tick_params(axis='x', labelrotation=90)
+    mo.ui.matplotlib(plt.gca())
     return
 
 
