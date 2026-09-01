@@ -104,5 +104,10 @@ def _(loadings_df, mo, pca, plt):
     return
 
 
+@app.cell
+def _():
+    return
+
+
 if __name__ == "__main__":
     app.run()
